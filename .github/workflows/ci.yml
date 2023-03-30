@@ -1,4 +1,4 @@
-name: CI with dynamic parallel matrix
+name: Jupyter Book Website
 
 on:
   push:
@@ -10,93 +10,69 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  packages: write
+  contents: write
+  pull-requests: write
+
 env:
-  TIMEOUT: 600
-  DFILE: '.github/Dockerfile'
-  IMAGE_NAME: 'app:test'
+  NPROC: '2'
+  JULIA_CACHE: '2'
 
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - name: Build and cache Docker container
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ${{ env.DFILE }}
-          tags: ${{ env.IMAGE_NAME }}
-          outputs: type=cacheonly
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-      - name: List notebooks as a JSON array
-        id: set-matrix
-        working-directory: docs
-        run: echo "matrix=$(python -c 'import glob, json; print(json.dumps(glob.glob("**.ipynb", recursive=True)))')" >> $GITHUB_OUTPUT
-  execute:
-    needs: setup
-    strategy:
-      max-parallel: 20
-      fail-fast: false
-      matrix:
-        # Notebooks need to be executed
-        notebook: ${{ fromJSON(needs.setup.outputs.matrix) }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - name: Restore Docker container
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ${{ env.DFILE }}
-          tags: ${{ env.IMAGE_NAME }}
-          load: true
-          cache-from: type=gha
-      - name: Execute Notebook
-        run: >
-          docker run --rm
-          --workdir=/tmp -v ${{ github.workspace }}:/tmp
-          ${{ env.IMAGE_NAME }}
-          jupyter nbconvert --to notebook --execute --inplace
-          --ExecutePreprocessor.timeout=${{ env.TIMEOUT }}
-          --ExecutePreprocessor.kernel_name=julia-$(julia -e 'print(VERSION.major,".",VERSION.minor)')
-          docs/${{ matrix.notebook }}
-      - name: Upload Notebook
-        uses: actions/upload-artifact@v3
-        with:
-          name: notebook
-          path: docs*/${{ matrix.notebook }}
-          retention-days: 1
-
-  jupyter-book:
-    needs: execute
+  literate:
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/sosiristseng/docker-jupyterbook:0.15.1.1
-    # output success flag for CI
-    outputs:
-      success: ${{ steps.setoutput.outputs.success }}
+      image: julia:1.8.5
+      volumes:
+        - /srv/juliapkgs
+      env:
+        JULIA_DEPOT_PATH: /srv/juliapkgs
+        JULIA_NUM_THREADS: auto
+
     steps:
-      - name: Checkout
+      - name: Install git
+        run: apt-get update -q && apt-get install git -y --no-install-recommends
+      - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Download notebooks
-        uses: actions/download-artifact@v3
+      - name: Cache Julia dependencies
+        uses: actions/cache@v3
+        if: ${{ env.JULIA_CACHE != '0'}}
         with:
-          name: notebook
-          path: out/
-      - name: Display structure of downloaded files
-        run: ls -R
-        working-directory: out
-      - name: Move notebooks
-        run: mv -v out/docs/* docs/
+          path: |
+            /srv/juliapkgs
+          # ${{ github.workspace }}/.CondaPkg
+          key: ${{ runner.os }}-julia-${{ env.JULIA_CACHE }}-${{ hashFiles('**/Manifest.toml') }}
+          # restore-keys: |
+          #   ${{ runner.os }}-julia-${{ env.JULIA_CACHE }}-
+      - name: Install Julia dependencies
+        env:
+          JULIA_PROJECT: ${{ github.workspace }}
+        run: julia --color=yes -e 'import Pkg; Pkg.instantiate(); Pkg.resolve(); Pkg.precompile()'
+      - name: Build notebooks with ${{ env.NPROC }} processes
+        env:
+          GKSwstype: 100
+          JULIA_PROJECT: ${{ github.workspace }}
+        run: julia --color=yes -p ${{ env.NPROC }} literate.jl
+      - name: Deploy Notebooks
+        if: ${{ github.ref == 'refs/heads/main' }}
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          publish_branch: out
+          force_orphan: true
+
+  jupyter-book:
+    needs: literate
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    container: ghcr.io/sosiristseng/docker-jupyterbook:0.15.1.1
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: out
       - name: Build website
         run: jupyter-book build docs/
       - name: Upload pages artifact
@@ -104,31 +80,8 @@ jobs:
         uses: actions/upload-pages-artifact@v1
         with:
           path: docs/_build/html
-      - name: Set output flag
-        id: setoutput
-        run: echo "success=true" >> $GITHUB_OUTPUT
 
-  # CI conclusion for GitHub status check
-  # https://brunoscheufler.com/blog/2022-04-09-the-required-github-status-check-that-wasnt
-  CI:
-    needs: jupyter-book
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      # pass step only when output of previous jupyter-book job is set
-      # in case at least one of the execution fails, jupyter-book is skipped
-      # and the output will not be set, which will then cause the ci job to fail
-      - run: |
-          passed="${{ needs.jupyter-book.outputs.success }}"
-          if [[ $passed == "true" ]]; then
-            echo "Tests passed"
-            exit 0
-          else
-            echo "Tests failed"
-            exit 1
-          fi
-
-  # Deployment job
+  # Deployment to GH pages
   deploy:
     needs: jupyter-book
     if: ${{ github.ref == 'refs/heads/main' }}
@@ -144,3 +97,21 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
+
+  binder:
+    needs: literate
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout notebook branch
+      uses: actions/checkout@v3
+      with:
+        ref: out
+    - name: repo2docker
+      uses: jupyterhub/repo2docker-action@master
+      with:
+        DOCKER_REGISTRY: ghcr.io
+        DOCKER_USERNAME: ${{ github.repository_owner }}
+        DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        BINDER_CACHE: true
+        PUBLIC_REGISTRY_CHECK: true

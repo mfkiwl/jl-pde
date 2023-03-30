@@ -13,14 +13,29 @@ on:
 jobs:
   linkcheck:
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/sosiristseng/docker-jupyterbook:0.15.1.1
+    container: ghcr.io/sosiristseng/docker-jupyterbook:0.15.1.1
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Setup Julia
+        uses: julia-actions/setup-julia@v1
+        with:
+          version: '1'
+      - name: Convert literate notebooks to Markdown
+        shell: julia --color=yes {0}
+        working-directory: docs/
+        run: |
+          import Pkg
+          Pkg.add("Literate")
+          using Literate
+          for nb in readdir(pwd())
+              if endswith(nb, ".jl")
+                Literate.markdown(nb; mdstrings=true, flavor = Literate.CommonMarkFlavor())
+              end
+          end
       - name: Disable code cell execution
         uses: mikefarah/yq@master
         with:
           cmd: yq -i '.execute.execute_notebooks = "off"' 'docs/_config.yml'
-      - name: Install Jupyter book and check links
+      - name: Check links
         run: jupyter-book build docs/ --builder linkcheck
