@@ -60,7 +60,7 @@ jobs:
           DEST: docs/_build/html/_sources
         run: |
           cp *.txt $DEST || true
-          cp Project.toml Manifest.toml $DEST
+          cp Project.toml $DEST
           cp -R src $DEST
       - name: Deploy Notebooks
         if: ${{ github.ref == 'refs/heads/main' }}
