@@ -13,10 +13,12 @@ Solving partial differential eqautions (PDEs) using https://github.com/SciML/Met
 
 - [Solving partial differential equations in parallel on GPUs](https://github.com/eth-vaw-glaciology/course-101-0250-00)
 
-## Universal Differential Equations (UDEs) in Julia
+## Using neural networks to solve differential equations
 
-- https://github.com/SciML/DiffEqFlux.jl
-- https://github.com/SciML/NeuralPDE.jl
+- Universal Differential Equations (UDEs): https://github.com/SciML/DiffEqFlux.jl
+- Physically-infomed neural networks (PINNs): https://github.com/SciML/NeuralPDE.jl
+
+`DiffEqFlux` is generally more efficient than `NeuralPDE` because `NeuralPDE` also tries to discover physical rules in the data, as mentioned in [this thread](https://discourse.julialang.org/t/comparisons-between-julia-neuralpde-jl-and-diffeqflux-jl-and-deepxde-python-package/52669).
 
 ## Related notes
 
