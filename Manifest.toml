@@ -2,7 +2,7 @@
 
 julia_version = "1.8.5"
 manifest_format = "2.0"
-project_hash = "695c9554a817d8e7e9b5aaf8a4fd491335e1555f"
+project_hash = "b4f10484b4cf93d448e3b7a6df0984c20bbbf0df"
 
 [[deps.AbstractAlgebra]]
 deps = ["GroupsCore", "InteractiveUtils", "LinearAlgebra", "MacroTools", "Markdown", "Random", "RandomExtensions", "SparseArrays", "Test"]
@@ -284,6 +284,12 @@ git-tree-sha1 = "455419f7e328a1a2493cabc6428d79e951349769"
 uuid = "a33af91c-f02d-484b-be07-31d278c5ca2b"
 version = "0.1.1"
 
+[[deps.ConcurrentUtilities]]
+deps = ["Serialization", "Sockets"]
+git-tree-sha1 = "b306df2650947e9eb100ec125ff8c65ca2053d30"
+uuid = "f0e56b4a-5159-44fe-b623-3e5288b988bb"
+version = "2.1.1"
+
 [[deps.ConsoleProgressMonitor]]
 deps = ["Logging", "ProgressMeter"]
 git-tree-sha1 = "3ab7b2136722890b9af903859afcf457fa3059e8"
@@ -471,9 +477,9 @@ version = "1.0.4"
 
 [[deps.Enzyme]]
 deps = ["CEnum", "EnzymeCore", "Enzyme_jll", "GPUCompiler", "LLVM", "Libdl", "LinearAlgebra", "ObjectFile", "Printf", "Random"]
-git-tree-sha1 = "4478f8bf24785d9eabe09044549b0e81b9e12d68"
+git-tree-sha1 = "28c09cee567a3b62a8ae2a99035bd477fdbaee3f"
 uuid = "7da242da-08ed-463a-9acd-ee780be4f1d9"
-version = "0.11.1"
+version = "0.11.0"
 
 [[deps.EnzymeCore]]
 deps = ["Adapt"]
@@ -483,9 +489,9 @@ version = "0.3.0"
 
 [[deps.Enzyme_jll]]
 deps = ["Artifacts", "JLLWrappers", "LazyArtifacts", "Libdl", "TOML"]
-git-tree-sha1 = "b0f72433c4679db4df05c999f200d60cb78d1a27"
+git-tree-sha1 = "b83b072e7a5eee2050800658f5676b0ff7b37dc6"
 uuid = "7cc45869-7501-5eee-bdea-0790c847d4ef"
-version = "0.0.57+0"
+version = "0.0.53+0"
 
 [[deps.Expat_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -724,10 +730,10 @@ uuid = "19dc6840-f33b-545b-b366-655c7e3ffd49"
 version = "1.5.1"
 
 [[deps.HTTP]]
-deps = ["Base64", "CodecZlib", "Dates", "IniFile", "Logging", "LoggingExtras", "MbedTLS", "NetworkOptions", "OpenSSL", "Random", "SimpleBufferStream", "Sockets", "URIs", "UUIDs"]
-git-tree-sha1 = "37e4657cd56b11abe3d10cd4a1ec5fbdb4180263"
+deps = ["Base64", "CodecZlib", "ConcurrentUtilities", "Dates", "Logging", "LoggingExtras", "MbedTLS", "NetworkOptions", "OpenSSL", "Random", "SimpleBufferStream", "Sockets", "URIs", "UUIDs"]
+git-tree-sha1 = "69182f9a2d6add3736b7a06ab6416aafdeec2196"
 uuid = "cd3eb016-35fb-5094-929b-558a96fad6f3"
-version = "1.7.4"
+version = "1.8.0"
 
 [[deps.HarfBuzz_jll]]
 deps = ["Artifacts", "Cairo_jll", "Fontconfig_jll", "FreeType2_jll", "Glib_jll", "Graphite2_jll", "JLLWrappers", "Libdl", "Libffi_jll", "Pkg"]
@@ -762,11 +768,6 @@ version = "0.1.1"
 git-tree-sha1 = "5cd07aab533df5170988219191dfad0519391428"
 uuid = "d25df0c9-e2be-5dd7-82c8-3ad0b3e990b9"
 version = "0.1.3"
-
-[[deps.IniFile]]
-git-tree-sha1 = "f550e6e32074c939295eb5ea6de31849ac2c9625"
-uuid = "83e8ac13-25f8-5344-8a64-a9f2b223428f"
-version = "0.5.1"
 
 [[deps.InitialValues]]
 git-tree-sha1 = "4da0f88e9a39111c2fa3add390ab15f3a44f3ca3"
@@ -1095,9 +1096,9 @@ version = "0.12.157"
 
 [[deps.Lux]]
 deps = ["Adapt", "ChainRulesCore", "Functors", "LinearAlgebra", "LuxCUDA", "LuxCore", "LuxLib", "Markdown", "NNlib", "Optimisers", "Random", "Requires", "Setfield", "SparseArrays", "Statistics", "TruncatedStacktraces"]
-git-tree-sha1 = "1db859508e955680c1b2ac8b5d514e284c21debf"
+git-tree-sha1 = "91c7576ada99d4ec401afcd6d75873ede2273061"
 uuid = "b2108857-7c20-44ae-9111-449ecde12c47"
-version = "0.4.51"
+version = "0.4.52"
 
 [[deps.LuxCUDA]]
 deps = ["CUDA", "NNlibCUDA", "Reexport", "cuDNN"]
@@ -1112,10 +1113,10 @@ uuid = "bb33d45b-7691-41d6-9220-0943567d0623"
 version = "0.1.3"
 
 [[deps.LuxLib]]
-deps = ["ChainRulesCore", "ForwardDiff", "KernelAbstractions", "LuxCUDA", "Markdown", "NNlib", "Random", "Requires", "ReverseDiff", "Statistics", "Tracker"]
-git-tree-sha1 = "b83ef50c4de8bedf3ac12dac361f4931f88d6ff6"
+deps = ["ChainRulesCore", "KernelAbstractions", "Markdown", "NNlib", "Random", "Reexport", "Requires", "Statistics"]
+git-tree-sha1 = "2be33a984180f2827220307fb2c269f1b19219e4"
 uuid = "82251201-b29d-42c6-8e01-566dec8acb11"
-version = "0.1.13"
+version = "0.2.1"
 
 [[deps.MLStyle]]
 git-tree-sha1 = "bc38dff0548128765760c79eb7388a4b37fae2c8"
@@ -1465,9 +1466,9 @@ version = "0.4.12"
 
 [[deps.PrecompileTools]]
 deps = ["Preferences"]
-git-tree-sha1 = "bc2bda41d798c2e66e7c44a11007bb329b15941b"
+git-tree-sha1 = "2e47054ffe7d0a8872e977c0d09eb4b3d162ebde"
 uuid = "aea7be01-6a6a-4083-8856-8a6e6704d82a"
-version = "1.0.1"
+version = "1.0.2"
 
 [[deps.Preferences]]
 deps = ["TOML"]
@@ -1530,9 +1531,9 @@ uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [[deps.Random123]]
 deps = ["Random", "RandomNumbers"]
-git-tree-sha1 = "7a1a306b72cfa60634f03a911405f4e64d1b718b"
+git-tree-sha1 = "552f30e847641591ba3f39fd1bed559b9deb0ef3"
 uuid = "74087812-796a-5b5d-8853-05524746bad3"
-version = "1.6.0"
+version = "1.6.1"
 
 [[deps.RandomExtensions]]
 deps = ["Random", "SparseArrays"]
@@ -1664,9 +1665,9 @@ version = "0.2.0"
 
 [[deps.SciMLSensitivity]]
 deps = ["Adapt", "ArrayInterface", "Cassette", "ChainRulesCore", "DiffEqBase", "DiffEqCallbacks", "DiffEqNoiseProcess", "DiffRules", "Distributions", "EllipsisNotation", "Enzyme", "FiniteDiff", "ForwardDiff", "FunctionWrappersWrappers", "GPUArraysCore", "LinearAlgebra", "LinearSolve", "Markdown", "OrdinaryDiffEq", "Parameters", "PreallocationTools", "QuadGK", "Random", "RandomNumbers", "RecursiveArrayTools", "Reexport", "ReverseDiff", "SciMLBase", "SciMLOperators", "SimpleNonlinearSolve", "SparseDiffTools", "StaticArraysCore", "Statistics", "StochasticDiffEq", "Tracker", "TruncatedStacktraces", "Zygote", "ZygoteRules"]
-git-tree-sha1 = "c824e2d7a209a774afc491cb96f7bc9801cbb9fd"
+git-tree-sha1 = "0ebe50946259baff6d7e70f9e9bc839db105cb36"
 uuid = "1ed8b502-d754-442c-8d5d-10ac956f44a1"
-version = "7.29.0"
+version = "7.30.0"
 
 [[deps.Scratch]]
 deps = ["Dates"]
@@ -1789,9 +1790,9 @@ version = "1.4.0"
 
 [[deps.StaticArrays]]
 deps = ["LinearAlgebra", "Random", "StaticArraysCore", "Statistics"]
-git-tree-sha1 = "63e84b7fdf5021026d0f17f76af7c57772313d99"
+git-tree-sha1 = "fd9a77cfd87116a27b2121c1988045f428b35a36"
 uuid = "90137ffa-7385-5640-81b9-e52037218182"
-version = "1.5.21"
+version = "1.5.22"
 
 [[deps.StaticArraysCore]]
 git-tree-sha1 = "6b7ba252635a5eff6a0b0664a41ee140a1c9e72a"

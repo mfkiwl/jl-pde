@@ -6,7 +6,6 @@ root: index
 parts:
   - caption: PDE
     chapters:
-      - file: pde-01-ode2pde
       - file: pde-02-heat
       - file: pde-03-brusselator
   - caption: UDE
