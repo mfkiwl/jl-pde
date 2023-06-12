@@ -5,7 +5,7 @@ jupyter_book_task:
   env:
     JOBS: '8'
     TIMEOUT: '-1'
-    EXTRA_ARGS: '--allow-errors'
+    EXTRA_ARGS: ''
   container:
     dockerfile: .github/Dockerfile
     cpu: 4
