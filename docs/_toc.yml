@@ -3,14 +3,6 @@
 
 format: jb-book
 root: index
-parts:
-  - caption: PDE
-    chapters:
-      - file: pde-02-heat
-      - file: pde-03-brusselator
-  - caption: UDE
-    chapters:
-      - file: ude-01-firstexample
-      - file: ude-02-multishooting
-      - file: ude-03-neuralode
-      - file: ude-04-poission
+chapters:
+  - file: pde-02-heat
+  - file: pde-03-brusselator
