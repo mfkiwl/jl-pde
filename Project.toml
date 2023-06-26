@@ -1,4 +1,5 @@
 [deps]
+DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
 DomainSets = "5b8099bc-c8ec-5219-889f-1d9e522a28bf"
 LinearSolve = "7ed4a6bd-45f5-4d41-b270-4a48e9bafcae"
 MethodOfLines = "94925ecb-adb7-4558-8ed8-f975c56a0bf4"
