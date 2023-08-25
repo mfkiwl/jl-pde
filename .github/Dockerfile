@@ -1,3 +1,4 @@
+FROM julia:1.9.2 as julia
 FROM python:3.11.4-slim as base
 
 # Supress warnings from parallel
