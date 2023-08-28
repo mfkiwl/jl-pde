@@ -1,5 +1,5 @@
 FROM julia:1.9.2 as julia
-FROM python:3.11.4-slim as base
+FROM python:3.11.5-slim as base
 
 # Supress warnings from parallel
 ENV LANG C.UTF-8
